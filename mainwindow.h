@@ -12,11 +12,12 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    QString world;
+    QString page;
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
-    QStringList categorize(int index, QSet<QString> set);
 
 private slots:
     void on_actionExit_triggered();
@@ -31,11 +32,22 @@ private slots:
 
     void on_articlesB_clicked();
 
-    void on_articleList_itemClicked(QListWidgetItem *item);
+    void on_flexList_itemClicked(QListWidgetItem *item);
+
+    void on_loadWorld_clicked();
+
+    void on_categoriesB_clicked();
 
 private:
     Ui::MainWindow *ui;
 
+    QStringList categorize(int index, QSet<QString> set);
+
+    QSet<QString> retrieveDir(QString dir);
+
+    void loadFlex(QString flex, int type);
+
+    void loadFlex(QString flex, QString dir, int type);
 
 };
 #endif // MAINWINDOW_H
