@@ -171,24 +171,48 @@
      </widget>
     </widget>
     <widget class="QWidget" name="page_2">
-     <widget class="QTableView" name="tableView">
+     <widget class="QListWidget" name="articleList">
       <property name="geometry">
        <rect>
-        <x>210</x>
-        <y>180</y>
-        <width>256</width>
-        <height>192</height>
+        <x>300</x>
+        <y>150</y>
+        <width>1000</width>
+        <height>730</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Palatino Linotype</family>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOn</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
      </widget>
-     <widget class="QTreeView" name="treeView">
+     <widget class="QLabel" name="articleLabel">
       <property name="geometry">
        <rect>
-        <x>580</x>
-        <y>190</y>
-        <width>256</width>
-        <height>192</height>
+        <x>300</x>
+        <y>50</y>
+        <width>1000</width>
+        <height>60</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Palatino Linotype</family>
+        <pointsize>40</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Articles</string>
       </property>
      </widget>
     </widget>

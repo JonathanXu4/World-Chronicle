@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidgetItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,6 +16,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    QStringList categorize(int index, QSet<QString> set);
+
 private slots:
     void on_actionExit_triggered();
 
@@ -26,7 +29,13 @@ private slots:
 
     void on_worldsB_clicked();
 
+    void on_articlesB_clicked();
+
+    void on_articleList_itemClicked(QListWidgetItem *item);
+
 private:
     Ui::MainWindow *ui;
+
+
 };
 #endif // MAINWINDOW_H
