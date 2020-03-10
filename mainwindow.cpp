@@ -118,7 +118,7 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
         }
             on_categoriesB_clicked();
     } else if (page == "Categories") {
-        qDebug() << "dsnajd";
+        loadFlex("Articles", world + "/" + item->text(), 2);
     }
 }
 
