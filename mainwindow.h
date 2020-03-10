@@ -14,6 +14,7 @@ class MainWindow : public QMainWindow
 
     QString world;
     QString page;
+    QString category;
 
 public:
     MainWindow(QWidget *parent = nullptr);
