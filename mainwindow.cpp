@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->bannerWorld->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/banner.png"));
     ui->worldIcon->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/logo2.png").scaled(360, 360, Qt::KeepAspectRatio));
     world = categorize(3, retrieveDir("worlds/")).first();
+
+    // Initializes to create mode
+    loadMode(0);
 }
 
 MainWindow::~MainWindow()
@@ -116,6 +119,11 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
             on_categoriesB_clicked();
     } else if (page == "Categories") {
         loadFlex("Articles", world + "/" + item->text(), 2);
+    } else if (page == "Articles") {
+        if (mode == 1) {
+            ui->stackedWidget->setCurrentIndex(2);
+            ui->titleBox->setText(item->text());
+        }
     }
 }
 
