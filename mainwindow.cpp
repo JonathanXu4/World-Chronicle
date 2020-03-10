@@ -109,20 +109,41 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
 {
     qDebug() << item->text();
     if (page == "Worlds") {
-        if (world != item->text()) {
-            // Sets selected world to favorite
-            QString newW = item->text();
-            QFile::rename("worlds/" + world + ".wcwf", "worlds/" + world + ".wcwd");
-            world = item->text();
-            QFile::rename("worlds/" + world + ".wcwd", "worlds/" + world + ".wcwf");
-        }
-            on_categoriesB_clicked();
-    } else if (page == "Categories") {
-        loadFlex("Articles", world + "/" + item->text(), 2);
-    } else if (page == "Articles") {
+        // edit
         if (mode == 1) {
+            current = item->text();
             ui->stackedWidget->setCurrentIndex(2);
-            ui->titleBox->setText(item->text());
+            ui->titleBox->setText(current);
+            ui->classMenu->setCurrentIndex(0);
+        // view
+        } else if (mode == 2) {
+            if (world != item->text()) {
+                // Sets selected world to favorite
+                QString newW = item->text();
+                QFile::rename("worlds/" + world + ".wcwf", "worlds/" + world + ".wcwd");
+                world = item->text();
+                QFile::rename("worlds/" + world + ".wcwd", "worlds/" + world + ".wcwf");
+            }
+            on_categoriesB_clicked();
+        }
+    } else if (page == "Categories") {
+        // edit
+        if (mode == 1) {
+            current = item->text();
+            ui->stackedWidget->setCurrentIndex(2);
+            ui->titleBox->setText(current);
+            ui->classMenu->setCurrentIndex(1);
+        // view
+        } else if (mode == 2) {
+            loadFlex("Articles", world + "/" + item->text(), 2);
+        }
+    } else if (page == "Articles") {
+        // edit
+        if (mode == 1) {
+            current = item->text();
+            ui->stackedWidget->setCurrentIndex(2);
+            ui->titleBox->setText(current);
+            ui->classMenu->setCurrentIndex(2);
         }
     }
 }
@@ -218,4 +239,10 @@ void MainWindow::on_artB_clicked()
     ui->flexList->clear();
     ui->flexList->addItems(list);
     ui->flexList->sortItems(Qt::AscendingOrder);
+}
+
+// Saves whatever is currently being edited
+void MainWindow::on_saveB_clicked()
+{
+
 }

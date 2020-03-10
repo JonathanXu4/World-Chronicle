@@ -12,10 +12,14 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    // current world
     QString world;
+    // current version of flex page
     QString page;
-    QString category;
+    // create, edit, view
     int mode;
+    // Currently edited object
+    QString current;
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -23,10 +27,6 @@ public:
 
 private slots:
     void on_actionExit_triggered();
-
-//    void on_pushButton_clicked();
-
-//    void on_pushButton_2_clicked();
 
     void on_exitB_clicked();
 
@@ -47,6 +47,8 @@ private slots:
     void on_viewB_clicked();
 
     void on_artB_clicked();
+
+    void on_saveB_clicked();
 
 private:
     Ui::MainWindow *ui;
