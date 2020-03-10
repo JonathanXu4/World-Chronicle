@@ -45,26 +45,18 @@ void MainWindow::on_worldsB_clicked()
     if (!QDir("worlds").exists()) {
         QDir().mkdir("worlds");
     }
-
-//    Obsolete tree model code
-//    QFileSystemModel *model = new QFileSystemModel;
-//    model->setRootPath(QDir::currentPath());
-//    QTreeView *tree = new QTreeView(ui->treeView);
-//    tree->setModel(model);
-//    qDebug() << QDir("worlds").absolutePath();
-//    tree->setRootIndex(model->index(QDir("worlds").absolutePath()));
-
 }
 
 // Sidebar articles button
 // Changes current page to articles page and loads articles
+// Only shows articles in current world
 void MainWindow::on_articlesB_clicked()
 {
-    loadFlex("Articles", 2);
+    loadFlex("Articles", world, 2);
 }
 
-// Private helper method, creates a list from a set
-// based on extensions
+// Private helper method
+// creates a list from a set based on extensions
 QStringList MainWindow::categorize(int type, QSet<QString> set) {
     /*  world       .wcwd   0
      *  category    .wcct   1
@@ -90,7 +82,7 @@ QStringList MainWindow::categorize(int type, QSet<QString> set) {
     }
     return list;
 }
-
+// Private helper method
 // Returns a set of all files in the given directory
 QSet<QString> MainWindow::retrieveDir(QString dir) {
     QDirIterator it(dir, QDirIterator::Subdirectories);
@@ -104,7 +96,14 @@ QSet<QString> MainWindow::retrieveDir(QString dir) {
     return set;
 }
 
-// Article selection on article page
+// When an item in the flex list is clicked, something happens depending on the page
+// World
+//      Sets the selected world to current, filtering all future categories and articles
+//      Then redirects to categories page
+// Category
+//      Shows a filtered list of articles under the category
+// Article
+//      Opens the article
 void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
 {
     qDebug() << item->text();
