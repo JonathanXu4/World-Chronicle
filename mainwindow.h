@@ -20,6 +20,8 @@ class MainWindow : public QMainWindow
     int mode;
     // Currently edited object
     QString current;
+    // Current category
+    QString category;
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -53,15 +55,17 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QStringList categorize(int index, QSet<QString> set);
+    QStringList categorize(QString type, QSet<QString> set);
 
     QSet<QString> retrieveDir(QString dir);
 
-    void loadFlex(QString flex, int type);
+    void loadFlex(QString flex, QString type);
 
-    void loadFlex(QString flex, QString dir, int type);
+    void loadFlex(QString flex, QString dir, QString type);
 
     void loadMode(int change);
+
+    void loadEdit(QString file);
 
 };
 #endif // MAINWINDOW_H

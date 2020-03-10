@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->bannerWorld->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/banner.png"));
     ui->worldIcon->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/logo2.png").scaled(360, 360, Qt::KeepAspectRatio));
-    world = categorize(3, retrieveDir("worlds/")).first();
+    world = categorize(".wcwf", retrieveDir("worlds/")).first();
 
     // Initializes to create mode
     loadMode(0);
@@ -55,32 +55,22 @@ void MainWindow::on_worldsB_clicked()
 // Only shows articles in current world
 void MainWindow::on_articlesB_clicked()
 {
-    loadFlex("Articles", world, 2);
+    loadFlex("Articles", world, ".wcar");
 }
 
 // Private helper method
 // creates a list from a set based on extensions
-QStringList MainWindow::categorize(int type, QSet<QString> set) {
+QStringList MainWindow::categorize(QString type, QSet<QString> set) {
     /*  world       .wcwd   0
      *  category    .wcct   1
      *  article     .wcar   2
      *  default     .wcwf   3
     */
-    QString extension;
-    if (type == 0) {
-        extension = ".wcwd";
-    } else if (type == 1) {
-        extension = ".wcct";
-    } else if (type == 2) {
-        extension = ".wcar";
-    } else if (type == 3) {
-        extension = ".wcwf";
-    }
     QStringList list = {};
     QSet<QString>::iterator i;
     for (i = set.begin(); i != set.end(); ++i) {
-        if (i->contains(extension)) {
-            list << i->split("/").last().remove(extension);
+        if (i->contains(type)) {
+            list << i->split("/").last().remove(type);
         }
     }
     return list;
@@ -111,10 +101,7 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
     if (page == "Worlds") {
         // edit
         if (mode == 1) {
-            current = item->text();
-            ui->stackedWidget->setCurrentIndex(2);
-            ui->titleBox->setText(current);
-            ui->classMenu->setCurrentIndex(0);
+            loadEdit(item->text());
         // view
         } else if (mode == 2) {
             if (world != item->text()) {
@@ -129,21 +116,15 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
     } else if (page == "Categories") {
         // edit
         if (mode == 1) {
-            current = item->text();
-            ui->stackedWidget->setCurrentIndex(2);
-            ui->titleBox->setText(current);
-            ui->classMenu->setCurrentIndex(1);
+            loadEdit(item->text());
         // view
         } else if (mode == 2) {
-            loadFlex("Articles", world + "/" + item->text(), 2);
+            loadFlex("Articles", world + "/" + item->text(), ".wcar");
         }
     } else if (page == "Articles") {
         // edit
         if (mode == 1) {
-            current = item->text();
-            ui->stackedWidget->setCurrentIndex(2);
-            ui->titleBox->setText(current);
-            ui->classMenu->setCurrentIndex(2);
+            loadEdit(item->text());
         }
     }
 }
@@ -152,18 +133,18 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
 void MainWindow::on_loadWorld_clicked()
 {
     // Includes favorite world
-    loadFlex("Worlds", 0);
+    loadFlex("Worlds", ".wcwd");
     ui->flexList->insertItem(0, world);
 }
 
 // 2 parameter load flex
-void MainWindow::loadFlex(QString flex, int type) {
+void MainWindow::loadFlex(QString flex, QString type) {
     loadFlex(flex, "", type);
 }
 
 // private helper method
 // sets up the flex page to its correct page
-void MainWindow::loadFlex(QString flex, QString dir, int type) {
+void MainWindow::loadFlex(QString flex, QString dir, QString type) {
     ui->stackedWidget->setCurrentIndex(1);
     page = flex;
     ui->flexHeader->setText(page);
@@ -177,7 +158,7 @@ void MainWindow::loadFlex(QString flex, QString dir, int type) {
 // Only shows categories for selected world
 void MainWindow::on_categoriesB_clicked()
 {
-    loadFlex("Categories", world, 1);
+    loadFlex("Categories", world, ".wcct");
 }
 
 // mode 0, 1, 2
@@ -244,5 +225,18 @@ void MainWindow::on_artB_clicked()
 // Saves whatever is currently being edited
 void MainWindow::on_saveB_clicked()
 {
+    //QFile data("output.txt");
+    //if (data.open(QFile::WriteOnly | QFile::Truncate)) {
+    //    QTextStream out(&data);
+        qDebug() << ui->descBox->toHtml();
+    //}
+}
 
+void MainWindow::loadEdit(QString file) {
+    current = file;
+
+    ui->stackedWidget->setCurrentIndex(2);
+    ui->titleBox->setText(current);
+
+    ui->classMenu->setCurrentIndex(2);
 }
