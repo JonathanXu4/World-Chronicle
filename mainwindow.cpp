@@ -152,3 +152,68 @@ void MainWindow::on_categoriesB_clicked()
 {
     loadFlex("Categories", world, 1);
 }
+
+// mode 0, 1, 2
+// create, edit, view
+void MainWindow::on_createB_clicked()
+{
+    loadMode(0);
+}
+
+void MainWindow::on_editB_clicked()
+{
+    loadMode(1);
+}
+
+void MainWindow::on_viewB_clicked()
+{
+    loadMode(2);
+}
+
+void MainWindow::loadMode(int change) {
+    if (mode != change) {
+        if (mode == 0) {
+            ui->createB->setStyleSheet("");
+        } else if (mode == 1) {
+            ui->editB->setStyleSheet("");
+        } else if (mode == 2) {
+           ui->viewB->setStyleSheet("");
+        }
+        mode = change;
+        if (mode == 0) {
+            ui->createB->setStyleSheet("background-color: rgb(255, 225, 227);");
+        } else if (mode == 1) {
+            ui->editB->setStyleSheet("background-color: rgb(255, 225, 227);");
+        } else if (mode == 2) {
+           ui->viewB->setStyleSheet("background-color: rgb(255, 225, 227);");
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

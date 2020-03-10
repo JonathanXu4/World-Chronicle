@@ -15,6 +15,7 @@ class MainWindow : public QMainWindow
     QString world;
     QString page;
     QString category;
+    int mode;
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -39,6 +40,12 @@ private slots:
 
     void on_categoriesB_clicked();
 
+    void on_createB_clicked();
+
+    void on_editB_clicked();
+
+    void on_viewB_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -50,5 +57,15 @@ private:
 
     void loadFlex(QString flex, QString dir, int type);
 
+    void loadMode(int change);
+
 };
 #endif // MAINWINDOW_H
+
+
+
+
+
+
+
+

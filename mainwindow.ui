@@ -342,6 +342,9 @@ color: rgb(242, 166, 170);</string>
        <kerning>true</kerning>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Create</string>
      </property>
