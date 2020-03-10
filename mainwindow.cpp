@@ -82,6 +82,7 @@ QStringList MainWindow::categorize(int type, QSet<QString> set) {
     }
     return list;
 }
+
 // Private helper method
 // Returns a set of all files in the given directory
 QSet<QString> MainWindow::retrieveDir(QString dir) {
@@ -89,9 +90,6 @@ QSet<QString> MainWindow::retrieveDir(QString dir) {
     QSet<QString> set = QSet<QString>();
     while (it.hasNext()) {
         set.insert(it.next());
-//        QFile f(it.next());
-//        f.open(QIODevice::ReadOnly);
-//        qDebug() << f.fileName() << f.readAll().trimmed().toDouble() / 1000 << "MHz";
     }
     return set;
 }
@@ -190,30 +188,26 @@ void MainWindow::loadMode(int change) {
     }
 }
 
+// Sidebar art button
+// Creates a list of png and jpg files and changes the page to art
+void MainWindow::on_artB_clicked()
+{
+    QSet<QString> set = retrieveDir("art");
 
+    QStringList list = {};
+    QSet<QString>::iterator i;
+    for (i = set.begin(); i != set.end(); ++i) {
+        if (i->contains(".png")) {
+            list << i->split("/").last().remove(".png");
+        } else if (i->contains(".jpg")) {
+            list << i->split("/").last().remove(".jpg");
+        }
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    ui->stackedWidget->setCurrentIndex(1);
+    page = "Art";
+    ui->flexHeader->setText(page);
+    ui->flexList->clear();
+    ui->flexList->addItems(list);
+    ui->flexList->sortItems(Qt::AscendingOrder);
+}

@@ -46,6 +46,8 @@ private slots:
 
     void on_viewB_clicked();
 
+    void on_artB_clicked();
+
 private:
     Ui::MainWindow *ui;
 
