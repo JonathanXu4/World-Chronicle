@@ -57,6 +57,8 @@ private:
 
     QStringList categorize(QString type, QSet<QString> set);
 
+    QStringList categorize(QString type, QString dir);
+
     QSet<QString> retrieveDir(QString dir);
 
     void loadFlex(QString flex, QString type);

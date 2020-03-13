@@ -1,3 +1,10 @@
+/*  Errors
+ *  case for missing favorite worlds and categories
+ *  Case for missing worlds
+ *
+ *
+ */
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -16,7 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->bannerWorld->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/banner.png"));
     ui->worldIcon->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/logo2.png").scaled(360, 360, Qt::KeepAspectRatio));
-    world = categorize(".wcwf", retrieveDir("worlds/")).first();
+    world = categorize(".wcwf", "worlds/").first();
+    category = categorize(".wccf", "worlds/" + world).first();
 
     // Initializes to create mode
     loadMode(0);
@@ -55,7 +63,12 @@ void MainWindow::on_worldsB_clicked()
 // Only shows articles in current world
 void MainWindow::on_articlesB_clicked()
 {
-    loadFlex("Articles", world, ".wcar");
+    loadFlex("Articles", world + "/" + category, ".wcar");
+}
+
+// Combines categorize and retrieveDir methods
+QStringList MainWindow::categorize(QString type, QString dir) {
+    return categorize(type, retrieveDir(dir));
 }
 
 // Private helper method
@@ -64,7 +77,8 @@ QStringList MainWindow::categorize(QString type, QSet<QString> set) {
     /*  world       .wcwd   0
      *  category    .wcct   1
      *  article     .wcar   2
-     *  default     .wcwf   3
+     *  defWorld    .wcwf   3
+     *  defCategory .wccf   4
     */
     QStringList list = {};
     QSet<QString>::iterator i;
@@ -106,10 +120,10 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
         } else if (mode == 2) {
             if (world != item->text()) {
                 // Sets selected world to favorite
-                QString newW = item->text();
                 QFile::rename("worlds/" + world + ".wcwf", "worlds/" + world + ".wcwd");
                 world = item->text();
                 QFile::rename("worlds/" + world + ".wcwd", "worlds/" + world + ".wcwf");
+                category = categorize(".wccf", "worlds/" + world).first();
             }
             on_categoriesB_clicked();
         }
@@ -119,7 +133,13 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
             loadEdit(item->text());
         // view
         } else if (mode == 2) {
-            loadFlex("Articles", world + "/" + item->text(), ".wcar");
+            if (category != item->text()) {
+                // Sets selected world to favorite
+                QFile::rename("worlds/" + world + "/" + category + ".wccf", "worlds/" + world + "/" + category + ".wcct");
+                category = item->text();
+                QFile::rename("worlds/" + world + "/" + category + ".wcct", "worlds/" + world + "/" + category + ".wccf");
+            }
+            loadFlex("Articles", world + "/" + category, ".wcar");
         }
     } else if (page == "Articles") {
         // edit
@@ -149,7 +169,7 @@ void MainWindow::loadFlex(QString flex, QString dir, QString type) {
     page = flex;
     ui->flexHeader->setText(page);
     ui->flexList->clear();
-    ui->flexList->addItems(categorize(type, retrieveDir("worlds/" + dir)));
+    ui->flexList->addItems(categorize(type, "worlds/" + dir));
     ui->flexList->sortItems(Qt::AscendingOrder);
 }
 
@@ -159,6 +179,7 @@ void MainWindow::loadFlex(QString flex, QString dir, QString type) {
 void MainWindow::on_categoriesB_clicked()
 {
     loadFlex("Categories", world, ".wcct");
+    ui->flexList->insertItem(0, category);
 }
 
 // mode 0, 1, 2
@@ -234,6 +255,8 @@ void MainWindow::on_saveB_clicked()
 
 void MainWindow::loadEdit(QString file) {
     current = file;
+
+    QFile *path = new QFile("");
 
     ui->stackedWidget->setCurrentIndex(2);
     ui->titleBox->setText(current);
