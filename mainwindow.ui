@@ -1295,7 +1295,7 @@ color: rgb(255, 242, 215);</string>
      </widget>
      <widget class="QLabel" name="errorMessage">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>

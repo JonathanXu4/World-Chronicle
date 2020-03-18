@@ -238,23 +238,11 @@ void MainWindow::loadMode(int change) {
 // Creates a list of png and jpg files and changes the page to art
 void MainWindow::on_artB_clicked()
 {
-    QSet<QString> set = retrieveDir("art");
-
-    QStringList list = {};
-    QSet<QString>::iterator i;
-    for (i = set.begin(); i != set.end(); ++i) {
-        if (i->contains(".png")) {
-            list << i->split("/").last().remove(".png");
-        } else if (i->contains(".jpg")) {
-            list << i->split("/").last().remove(".jpg");
-        }
-    }
-
     ui->stackedWidget->setCurrentIndex(1);
     page = "Art";
     ui->flexHeader->setText(page);
     ui->flexList->clear();
-    ui->flexList->addItems(list);
+    ui->flexList->addItems(loadArt());
     ui->flexList->sortItems(Qt::AscendingOrder);
 }
 
@@ -392,7 +380,9 @@ void MainWindow::loadCreate(int type) {
     ui->titleBoxC->clear();
     ui->descBoxC->clear();
     ui->sideBoxC->clear();
-
+    ui->artMenuC->clear();
+    ui->errorMessage->setText("");
+    ui->artMenuC->addItems(loadArt());
     ui->stackedWidget->setCurrentIndex(4);
 }
 
@@ -401,9 +391,9 @@ void MainWindow::loadCreate(int type) {
 void MainWindow::on_createC_clicked()
 {
     if (ui->titleBoxC->toPlainText().isEmpty()) {
-        ui->errorMessage->setEnabled(true);
+        ui->errorMessage->setText("Please fill out all information");
     } else {
-        ui->errorMessage->setEnabled(false);
+        ui->errorMessage->setText("");
         if (current == "0") {
             world = ui->titleBoxC->toPlainText();
             current = "worlds/" + world;
@@ -462,4 +452,19 @@ void MainWindow::on_createC_clicked()
 void MainWindow::on_newWorld_clicked()
 {
     loadCreate(0);
+}
+
+// Finds .png and .jpg files in the art folder
+QStringList MainWindow::loadArt() {
+    QSet<QString> set = retrieveDir("art");
+    QStringList list = {};
+    QSet<QString>::iterator i;
+    for (i = set.begin(); i != set.end(); ++i) {
+        if (i->contains(".png")) {
+            list << i->split("/").last().remove(".png");
+        } else if (i->contains(".jpg")) {
+            list << i->split("/").last().remove(".jpg");
+        }
+    }
+    return list;
 }

@@ -78,6 +78,8 @@ private:
 
     void loadCreate(int type);
 
+    QStringList loadArt();
+
     QString toClass(QString ext);
 
 };
