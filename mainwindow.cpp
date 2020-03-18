@@ -246,6 +246,7 @@ void MainWindow::on_artB_clicked()
 // Saves whatever is currently being edited
 void MainWindow::on_saveB_clicked()
 {
+    // Saves description and sidebar to file
     QFile path(current);
     QFile side(current + "s");
     path.open(QIODevice::WriteOnly);
@@ -259,10 +260,38 @@ void MainWindow::on_saveB_clicked()
     document.setHtml(ui->sideBox->toHtml());
     QTextStream out2(&side);
     out2 << document.toHtml();
-    //if (current.split("/").last().split(".").first() != ui->titleBox->toPlainText()) {
-    //    path.rename("worlds/" + category + ui->titleBox->toPlainText());
-    //    side.rename("worlds/" + category + ui->titleBox->toPlainText() + "s");
-    //}
+
+    // Checks if title or parent has been changed
+    QStringList list = current.split("/");
+    QString ext = list.last().split(".").last();
+    QString title = list.last().split(".").first();
+    QString parent = list.at(list.length() - 2);
+    if (title != ui->titleBox->toPlainText()) {
+        QString newPath = "";
+        for (int i = 0; i < list.length() - 1; i++) {
+            newPath += list.at(i) + "/";
+        }
+        qDebug() << newPath;
+        if (ext != "wcar") {
+            QDir().rename(newPath + title, newPath + ui->titleBox->toPlainText());
+        }
+        title = ui->titleBox->toPlainText();
+        if (ext == "wcwd") {
+            world = title;
+        }
+        newPath += title + "." + ext;
+        path.rename(newPath);
+        side.rename(newPath + "s");
+        current = newPath;
+    }
+    if (ui->parentMenu->currentText() != parent && ext == "wcar") {
+        QString newPath = "worlds/" + world + "/";
+        category = ui->parentMenu->itemText(ui->parentMenu->currentIndex());
+        newPath += category + "/" + title + "." + ext;
+        path.rename(newPath);
+        side.rename(newPath + "s");
+        current = newPath;
+    }
 }
 
 // Loads edit boxes from save file
@@ -274,7 +303,7 @@ void MainWindow::loadEdit(QString file) {
     ui->stackedWidget->setCurrentIndex(2);
     ui->titleBox->setText(current.split("/").last().split(".").first());
     ui->classMenu->setEnabled(false);
-    ui->parentMenu->addItem("");
+    ui->parentMenu->addItem("none");
     QString ext = current.split("/").last().split(".").last();
     ui->parentMenu->clear();
     if (ext == "wcwd") {
@@ -283,12 +312,8 @@ void MainWindow::loadEdit(QString file) {
         ui->parentMenu->setEnabled(false);
     } else if (ext == "wcct") {
         ui->classMenu->setCurrentIndex(1);
-
-        qDebug() << retrieveDir("worlds");
-        qDebug() << categorize(".wcwd", "worlds/");
-        ui->parentMenu->addItems(categorize(".wcwd", "worlds/"));
-        ui->parentMenu->setCurrentText(current.split("/").at(current.split("/").length() - 2));
-        ui->parentMenu->setEnabled(true);
+        ui->parentMenu->addItem(current.split("/").at(current.split("/").length() - 2));
+        ui->parentMenu->setEnabled(false);
     } else if (ext == "wcar") {
         ui->classMenu->setCurrentIndex(2);
         ui->parentMenu->addItems(categorize(".wcct", "worlds/" + world + "/"));
