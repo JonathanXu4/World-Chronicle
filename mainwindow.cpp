@@ -147,6 +147,9 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
         if (mode == 1) {
             current = "worlds/" + world + "/" + category + "/" + item->text() + ".wcar";
             loadEdit();
+        } else if (mode == 2) {
+            current = "worlds/" + world + "/" + category + "/" + item->text() + ".wcar";
+            loadView();
         }
     }
 }
@@ -201,7 +204,6 @@ void MainWindow::on_editB_clicked()
 void MainWindow::on_viewB_clicked()
 {
     loadMode(2);
-    loadView();
 
 }
 
@@ -343,7 +345,6 @@ void MainWindow::loadEdit() {
 // requires current path to be correct
 void MainWindow::loadView() {
     current = "worlds/Neshka/Characters/Hydromass.wcar";
-    ui->stackedWidget->setCurrentIndex(3);
     QFile path(current);
     QFile side(current + "s");
 
@@ -358,6 +359,11 @@ void MainWindow::loadView() {
     ui->bodyV->setText(document.toHtml());
     document.setHtml(in2.readAll());
     ui->sideV->setText(document.toHtml());
+    ui->categoryV->setText("In: " + category);
+
+    ui->stackedWidget->setCurrentIndex(3);
+
+
 }
 
 // converts extensions to their respective classes
