@@ -193,8 +193,12 @@ void MainWindow::loadFlex(QString flex, QString dir, QString type) {
 // Only shows categories for selected world
 void MainWindow::on_categoriesB_clicked()
 {
-    loadFlex("Categories", world, ".wcct");
-    ui->flexList->insertItem(0, category);
+    if (mode == 1) {
+        ui->stackedWidget->setCurrentIndex(2);
+    } else {
+        loadFlex("Categories", world, ".wcct");
+        ui->flexList->insertItem(0, category);
+    }
 }
 
 // mode 0, 1, 2
@@ -274,6 +278,10 @@ void MainWindow::on_saveB_clicked()
     document.setHtml(ui->sideBox->toHtml());
     QTextStream out2(&side);
     out2 << document.toHtml();
+    //if (current.split("/").last().split(".").first() != ui->titleBox->toPlainText()) {
+    //    path.rename("worlds/" + category + ui->titleBox->toPlainText());
+    //    side.rename("worlds/" + category + ui->titleBox->toPlainText() + "s");
+    //}
 }
 
 void MainWindow::loadEdit(QString file) {
@@ -282,7 +290,7 @@ void MainWindow::loadEdit(QString file) {
     QFile side(current + "s");
 
     ui->stackedWidget->setCurrentIndex(2);
-    ui->titleBox->setText(file.split("/").last().split(".").first());
+    ui->titleBox->setText(current.split("/").last().split(".").first());
 
     path.open(QIODevice::ReadOnly);
     side.open(QIODevice::ReadOnly);
