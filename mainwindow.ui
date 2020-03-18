@@ -309,7 +309,7 @@
       <property name="geometry">
        <rect>
         <x>1250</x>
-        <y>750</y>
+        <y>850</y>
         <width>150</width>
         <height>40</height>
        </rect>
@@ -969,7 +969,7 @@ color: rgb(255, 242, 215);</string>
       <property name="geometry">
        <rect>
         <x>1250</x>
-        <y>750</y>
+        <y>850</y>
         <width>150</width>
         <height>40</height>
        </rect>
@@ -1300,7 +1300,7 @@ color: rgb(255, 242, 215);</string>
       <property name="geometry">
        <rect>
         <x>1100</x>
-        <y>650</y>
+        <y>750</y>
         <width>300</width>
         <height>40</height>
        </rect>
