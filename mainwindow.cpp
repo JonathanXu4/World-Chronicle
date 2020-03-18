@@ -23,13 +23,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->bannerWorld->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/banner.png"));
     ui->worldIcon->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/logo2.png").scaled(360, 360, Qt::KeepAspectRatio));
+    ui->artV->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/Iroha Chu.jpg").scaled(320, 390, Qt::KeepAspectRatio));
     world = categorize(".wcwd", "worlds/").first();
     category = categorize(".wcct", "worlds/" + world + "/").first();
     ui->menuFile->setTitle(world);
 
 
     // Initializes to create mode
-    loadMode(0);
+    loadMode(2);
 }
 
 MainWindow::~MainWindow()
@@ -65,7 +66,11 @@ void MainWindow::on_worldsB_clicked()
 // Only shows articles in current world
 void MainWindow::on_articlesB_clicked()
 {
-    loadFlex("Articles", world + "/" + category, ".wcar");
+    if (mode == 0) {
+        loadCreate(2);
+    } else {
+        loadFlex("Articles", world + "/" + category, ".wcar");
+    }
 }
 
 // Combines categorize and retrieveDir methods
@@ -117,6 +122,7 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
         if (mode == 1) {
             if (world != item->text()) {
                 world = item->text();
+                ui->menuFile->setTitle(world);
                 category = categorize(".wcct", "worlds/" + world + "/").first();
             }
             current = "worlds/" + world + ".wcwd";
@@ -125,6 +131,7 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
         } else if (mode == 2) {
             if (world != item->text()) {
                 world = item->text();
+                ui->menuFile->setTitle(world);
                 category = categorize(".wcct", "worlds/" + world + "/").first();
             }
             on_categoriesB_clicked();
@@ -182,11 +189,11 @@ void MainWindow::loadFlex(QString flex, QString dir, QString type) {
 // Only shows categories for selected world
 void MainWindow::on_categoriesB_clicked()
 {
-    //if (mode == 1) {
-    //    ui->stackedWidget->setCurrentIndex(2);
-    //} else {
+    if (mode == 0) {
+        loadCreate(1);
+    } else {
         loadFlex("Categories", world, ".wcct");
-    //}
+    }
 }
 
 // mode 0, 1, 2
@@ -286,6 +293,7 @@ void MainWindow::on_saveB_clicked()
         title = ui->titleBox->toPlainText();
         if (ext == "wcwd") {
             world = title;
+            ui->menuFile->setTitle(world);
         }
         newPath += title + "." + ext;
         path.rename(newPath);
@@ -344,7 +352,6 @@ void MainWindow::loadEdit() {
 // loads view page using save files
 // requires current path to be correct
 void MainWindow::loadView() {
-    current = "worlds/Neshka/Characters/Hydromass.wcar";
     QFile path(current);
     QFile side(current + "s");
 
@@ -359,26 +366,100 @@ void MainWindow::loadView() {
     ui->bodyV->setText(document.toHtml());
     document.setHtml(in2.readAll());
     ui->sideV->setText(document.toHtml());
-    ui->categoryV->setText("In: " + category);
+    ui->categoryV->setText("In: " + category + "\n");
 
     ui->stackedWidget->setCurrentIndex(3);
-
-
 }
+
+// loads create page depending on which button was clicked
+void MainWindow::loadCreate(int type) {
+    ui->classMenuC->setCurrentIndex(type);
+    ui->classMenuC->setEnabled(false);
+    ui->parentMenuC->clear();
+    if (type == 0) {
+        ui->parentMenuC->addItem("none");
+        ui->parentMenuC->setEnabled(false);
+    } else if (type == 1) {
+        ui->parentMenuC->addItem(world);
+        ui->parentMenuC->setEnabled(false);
+    } else if (type == 2) {
+        ui->parentMenuC->addItems(categorize(".wcct", "worlds/" + world + "/"));
+        ui->parentMenuC->setCurrentText(category);
+        ui->parentMenuC->setEnabled(true);
+    }
+
+    current = QString::number(type);
+    ui->titleBoxC->clear();
+    ui->descBoxC->clear();
+    ui->sideBoxC->clear();
+
+    ui->stackedWidget->setCurrentIndex(4);
+}
+
+// create button for create page
+// Requires title to be filled out
+void MainWindow::on_createC_clicked()
+{
+    if (ui->titleBoxC->toPlainText().isEmpty()) {
+        ui->errorMessage->setEnabled(true);
+    } else {
+        ui->errorMessage->setEnabled(false);
+        if (current == "0") {
+            world = ui->titleBoxC->toPlainText();
+            current = "worlds/" + world;
+            QDir().mkdir(current);
+            current += ".wcwd";
+        } else if (current == "1") {
+            world = ui->parentMenuC->currentText();
+            category = ui->titleBoxC->toPlainText();
+            current = "worlds/" + world + "/" + category;
+            QDir().mkdir(current);
+            current += ".wcct";
+        } else if (current == "2") {
+            category = ui->parentMenuC->currentText();
+            current = "worlds/" + world + "/" + category + "/" + ui->titleBoxC->toPlainText() + ".wcar";
+        }
+        QFile file(current);
+        QFile side(current + "s");
+        file.open(QIODevice::WriteOnly);
+        side.open(QIODevice::WriteOnly);
+        QTextDocument document;
+        if (!ui->descBoxC->toPlainText().isEmpty()) {
+            file.QFile::resize(0);
+            document.setHtml(ui->descBoxC->toHtml());
+            QTextStream out(&file);
+            out << document.toHtml();
+        }
+        if (!ui->sideBoxC->toPlainText().isEmpty()) {
+            side.QFile::resize(0);
+            document.setHtml(ui->sideBoxC->toHtml());
+            QTextStream out(&side);
+            out << document.toHtml();
+        }
+        loadEdit();
+    }
+}
+
 
 // converts extensions to their respective classes
 // Currently useless
-QString MainWindow::toClass(QString ext) {
-    /*  world       .wcwd   0
-     *  category    .wcct   1
-     *  article     .wcar   2
-    */
-    if (ext == "wcwd") {
-        return "world";
-    } else if (ext == "wcct") {
-        return "category";
-    } else if (ext == "wcar") {
-        return "article";
-    }
-    return "";
+//QString MainWindow::toClass(QString ext) {
+//    /*  world       .wcwd   0
+//     *  category    .wcct   1
+//     *  article     .wcar   2
+//    */
+//    if (ext == "wcwd") {
+//        return "world";
+//    } else if (ext == "wcct") {
+//        return "category";
+//    } else if (ext == "wcar") {
+//        return "article";
+//    }
+//    return "";
+//}
+
+// Create world button
+void MainWindow::on_newWorld_clicked()
+{
+    loadCreate(0);
 }

@@ -53,6 +53,10 @@ private slots:
 
     void on_saveB_clicked();
 
+    void on_newWorld_clicked();
+
+    void on_createC_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -71,6 +75,8 @@ private:
     void loadEdit();
 
     void loadView();
+
+    void loadCreate(int type);
 
     QString toClass(QString ext);
 
