@@ -276,12 +276,24 @@ void MainWindow::loadEdit(QString file) {
     ui->classMenu->setEnabled(false);
     ui->parentMenu->addItem("");
     QString ext = current.split("/").last().split(".").last();
+    ui->parentMenu->clear();
     if (ext == "wcwd") {
         ui->classMenu->setCurrentIndex(0);
+        ui->parentMenu->addItem("None");
+        ui->parentMenu->setEnabled(false);
     } else if (ext == "wcct") {
         ui->classMenu->setCurrentIndex(1);
+
+        qDebug() << retrieveDir("worlds");
+        qDebug() << categorize(".wcwd", "worlds/");
+        ui->parentMenu->addItems(categorize(".wcwd", "worlds/"));
+        ui->parentMenu->setCurrentText(current.split("/").at(current.split("/").length() - 2));
+        ui->parentMenu->setEnabled(true);
     } else if (ext == "wcar") {
         ui->classMenu->setCurrentIndex(2);
+        ui->parentMenu->addItems(categorize(".wcct", "worlds/" + world + "/"));
+        ui->parentMenu->setCurrentText(current.split("/").at(current.split("/").length() - 2));
+        ui->parentMenu->setEnabled(true);
     }
 
 
