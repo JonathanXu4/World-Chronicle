@@ -70,6 +70,8 @@ private:
 
     void loadEdit(QString file);
 
+    QString toClass(QString ext);
+
 };
 #endif // MAINWINDOW_H
 

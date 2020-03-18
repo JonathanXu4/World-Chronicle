@@ -23,8 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->bannerWorld->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/banner.png"));
     ui->worldIcon->setPixmap(QPixmap ("C:/Users/Chari/Desktop/Qt/WorldChronicle/logo2.png").scaled(360, 360, Qt::KeepAspectRatio));
-    world = categorize(".wcwf", "worlds/").first();
-    category = categorize(".wccf", "worlds/" + world).first();
+    world = categorize(".wcwd", "worlds/").first();
+    category = categorize(".wcct", "worlds/" + world + "/").first();
+    ui->menuFile->setTitle(world);
 
     // Initializes to create mode
     loadMode(0);
@@ -77,8 +78,6 @@ QStringList MainWindow::categorize(QString type, QSet<QString> set) {
     /*  world       .wcwd   0
      *  category    .wcct   1
      *  article     .wcar   2
-     *  defWorld    .wcwf   3
-     *  defCategory .wccf   4
     */
     QStringList list = {};
     QSet<QString>::iterator i;
@@ -115,44 +114,28 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
     if (page == "Worlds") {
         // edit
         if (mode == 1) {
-            QFile::rename("worlds/" + world + ".wcwf", "worlds/" + world + ".wcwd");
-            QFile::rename("worlds/" + world + ".wcwfs", "worlds/" + world + ".wcwds");
-            world = item->text();
-            QFile::rename("worlds/" + world + ".wcwd", "worlds/" + world + ".wcwf");
-            QFile::rename("worlds/" + world + ".wcwds", "worlds/" + world + ".wcwfs");
-            category = categorize(".wccf", "worlds/" + world).first();
-            loadEdit(world + ".wcwf");
+            if (world != item->text()) {
+                world = item->text();
+                category = categorize(".wcct", "worlds/" + world + "/").first();
+            }
+            loadEdit(world + ".wcwd");
         // view
         } else if (mode == 2) {
             if (world != item->text()) {
-                // Sets selected world to favorite
-                QFile::rename("worlds/" + world + ".wcwf", "worlds/" + world + ".wcwd");
-                QFile::rename("worlds/" + world + ".wcwfs", "worlds/" + world + ".wcwds");
                 world = item->text();
-                QFile::rename("worlds/" + world + ".wcwd", "worlds/" + world + ".wcwf");
-                QFile::rename("worlds/" + world + ".wcwds", "worlds/" + world + ".wcwfs");
-                category = categorize(".wccf", "worlds/" + world).first();
+                category = categorize(".wcct", "worlds/" + world + "/").first();
             }
             on_categoriesB_clicked();
         }
     } else if (page == "Categories") {
         // edit
         if (mode == 1) {
-            QFile::rename("worlds/" + world + "/" + category + ".wccf", "worlds/" + world + "/" + category + ".wcct");
-            QFile::rename("worlds/" + world + "/" + category + ".wccfs", "worlds/" + world + "/" + category + ".wccts");
             category = item->text();
-            QFile::rename("worlds/" + world + "/" + category + ".wcct", "worlds/" + world + "/" + category + ".wccf");
-            QFile::rename("worlds/" + world + "/" + category + ".wccts", "worlds/" + world + "/" + category + ".wccfs");
-            loadEdit(world + "/" + category + ".wccf");
+            loadEdit(world + "/" + category + ".wcct");
         // view
         } else if (mode == 2) {
             if (category != item->text()) {
-                // Sets selected world to favorite
-                QFile::rename("worlds/" + world + "/" + category + ".wccf", "worlds/" + world + "/" + category + ".wcct");
-                QFile::rename("worlds/" + world + "/" + category + ".wccfs", "worlds/" + world + "/" + category + ".wccts");
                 category = item->text();
-                QFile::rename("worlds/" + world + "/" + category + ".wcct", "worlds/" + world + "/" + category + ".wccf");
-                QFile::rename("worlds/" + world + "/" + category + ".wccts", "worlds/" + world + "/" + category + ".wccfs");
             }
             loadFlex("Articles", world + "/" + category, ".wcar");
         }
@@ -169,7 +152,6 @@ void MainWindow::on_loadWorld_clicked()
 {
     // Includes favorite world
     loadFlex("Worlds", ".wcwd");
-    ui->flexList->insertItem(0, world);
 }
 
 // 2 parameter load flex
@@ -193,12 +175,11 @@ void MainWindow::loadFlex(QString flex, QString dir, QString type) {
 // Only shows categories for selected world
 void MainWindow::on_categoriesB_clicked()
 {
-    if (mode == 1) {
-        ui->stackedWidget->setCurrentIndex(2);
-    } else {
+    //if (mode == 1) {
+    //    ui->stackedWidget->setCurrentIndex(2);
+    //} else {
         loadFlex("Categories", world, ".wcct");
-        ui->flexList->insertItem(0, category);
-    }
+    //}
 }
 
 // mode 0, 1, 2
@@ -284,6 +265,7 @@ void MainWindow::on_saveB_clicked()
     //}
 }
 
+// Loads edit boxes from save file
 void MainWindow::loadEdit(QString file) {
     current = "worlds/" + file;
     QFile path(current);
@@ -291,6 +273,17 @@ void MainWindow::loadEdit(QString file) {
 
     ui->stackedWidget->setCurrentIndex(2);
     ui->titleBox->setText(current.split("/").last().split(".").first());
+    ui->classMenu->setEnabled(false);
+    ui->parentMenu->addItem("");
+    QString ext = current.split("/").last().split(".").last();
+    if (ext == "wcwd") {
+        ui->classMenu->setCurrentIndex(0);
+    } else if (ext == "wcct") {
+        ui->classMenu->setCurrentIndex(1);
+    } else if (ext == "wcar") {
+        ui->classMenu->setCurrentIndex(2);
+    }
+
 
     path.open(QIODevice::ReadOnly);
     side.open(QIODevice::ReadOnly);
@@ -301,9 +294,20 @@ void MainWindow::loadEdit(QString file) {
     ui->descBox->setText(document.toHtml());
     document.setHtml(in2.readAll());
     ui->sideBox->setText(document.toHtml());
+}
 
-    //path.QFile::resize(0);
-    //stream << document.toHtml();
-
-    ui->classMenu->setCurrentIndex(2);
+// converts extensions to their respective classes
+QString MainWindow::toClass(QString ext) {
+    /*  world       .wcwd   0
+     *  category    .wcct   1
+     *  article     .wcar   2
+    */
+    if (ext == "wcwd") {
+        return "world";
+    } else if (ext == "wcct") {
+        return "category";
+    } else if (ext == "wcar") {
+        return "article";
+    }
+    return "";
 }
