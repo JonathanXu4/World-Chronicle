@@ -306,23 +306,23 @@ void MainWindow::loadEdit() {
 
     ui->stackedWidget->setCurrentIndex(2);
     ui->titleBox->setText(current.split("/").last().split(".").first());
-    ui->classMenu->setEnabled(false);
     ui->parentMenu->addItem("none");
     QString ext = current.split("/").last().split(".").last();
     ui->parentMenu->clear();
+    ui->parentMenu->setEnabled(false);
+    ui->artMenu->setEnabled(false);
     if (ext == "wcwd") {
         ui->classMenu->setCurrentIndex(0);
         ui->parentMenu->addItem("None");
-        ui->parentMenu->setEnabled(false);
     } else if (ext == "wcct") {
         ui->classMenu->setCurrentIndex(1);
         ui->parentMenu->addItem(current.split("/").at(current.split("/").length() - 2));
-        ui->parentMenu->setEnabled(false);
     } else if (ext == "wcar") {
         ui->classMenu->setCurrentIndex(2);
         ui->parentMenu->addItems(categorize(".wcct", "worlds/" + world + "/"));
         ui->parentMenu->setCurrentText(current.split("/").at(current.split("/").length() - 2));
         ui->parentMenu->setEnabled(true);
+        ui->artMenu->setEnabled(true);
     }
 
 
@@ -362,27 +362,27 @@ void MainWindow::loadView() {
 // loads create page depending on which button was clicked
 void MainWindow::loadCreate(int type) {
     ui->classMenuC->setCurrentIndex(type);
-    ui->classMenuC->setEnabled(false);
+    ui->parentMenuC->setEnabled(false);
+    ui->artMenuC->setEnabled(false);
     ui->parentMenuC->clear();
+    ui->artMenuC->clear();
     if (type == 0) {
         ui->parentMenuC->addItem("none");
-        ui->parentMenuC->setEnabled(false);
     } else if (type == 1) {
         ui->parentMenuC->addItem(world);
-        ui->parentMenuC->setEnabled(false);
     } else if (type == 2) {
         ui->parentMenuC->addItems(categorize(".wcct", "worlds/" + world + "/"));
         ui->parentMenuC->setCurrentText(category);
         ui->parentMenuC->setEnabled(true);
+        ui->artMenuC->setEnabled(true);
+        ui->artMenuC->addItems(loadArt());
     }
 
     current = QString::number(type);
     ui->titleBoxC->clear();
     ui->descBoxC->clear();
     ui->sideBoxC->clear();
-    ui->artMenuC->clear();
     ui->errorMessage->setText("");
-    ui->artMenuC->addItems(loadArt());
     ui->stackedWidget->setCurrentIndex(4);
 }
 
