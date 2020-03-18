@@ -83,7 +83,7 @@ QStringList MainWindow::categorize(QString type, QSet<QString> set) {
     QStringList list = {};
     QSet<QString>::iterator i;
     for (i = set.begin(); i != set.end(); ++i) {
-        if (i->contains(type)) {
+        if (i->contains(type) && i->lastIndexOf("s") != i->length() - 1) {
             list << i->split("/").last().remove(type);
         }
     }
@@ -115,14 +115,22 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
     if (page == "Worlds") {
         // edit
         if (mode == 1) {
-            loadEdit(item->text());
+            QFile::rename("worlds/" + world + ".wcwf", "worlds/" + world + ".wcwd");
+            QFile::rename("worlds/" + world + ".wcwfs", "worlds/" + world + ".wcwds");
+            world = item->text();
+            QFile::rename("worlds/" + world + ".wcwd", "worlds/" + world + ".wcwf");
+            QFile::rename("worlds/" + world + ".wcwds", "worlds/" + world + ".wcwfs");
+            category = categorize(".wccf", "worlds/" + world).first();
+            loadEdit(world + ".wcwf");
         // view
         } else if (mode == 2) {
             if (world != item->text()) {
                 // Sets selected world to favorite
                 QFile::rename("worlds/" + world + ".wcwf", "worlds/" + world + ".wcwd");
+                QFile::rename("worlds/" + world + ".wcwfs", "worlds/" + world + ".wcwds");
                 world = item->text();
                 QFile::rename("worlds/" + world + ".wcwd", "worlds/" + world + ".wcwf");
+                QFile::rename("worlds/" + world + ".wcwds", "worlds/" + world + ".wcwfs");
                 category = categorize(".wccf", "worlds/" + world).first();
             }
             on_categoriesB_clicked();
@@ -130,21 +138,28 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
     } else if (page == "Categories") {
         // edit
         if (mode == 1) {
-            loadEdit(item->text());
+            QFile::rename("worlds/" + world + "/" + category + ".wccf", "worlds/" + world + "/" + category + ".wcct");
+            QFile::rename("worlds/" + world + "/" + category + ".wccfs", "worlds/" + world + "/" + category + ".wccts");
+            category = item->text();
+            QFile::rename("worlds/" + world + "/" + category + ".wcct", "worlds/" + world + "/" + category + ".wccf");
+            QFile::rename("worlds/" + world + "/" + category + ".wccts", "worlds/" + world + "/" + category + ".wccfs");
+            loadEdit(world + "/" + category + ".wccf");
         // view
         } else if (mode == 2) {
             if (category != item->text()) {
                 // Sets selected world to favorite
                 QFile::rename("worlds/" + world + "/" + category + ".wccf", "worlds/" + world + "/" + category + ".wcct");
+                QFile::rename("worlds/" + world + "/" + category + ".wccfs", "worlds/" + world + "/" + category + ".wccts");
                 category = item->text();
                 QFile::rename("worlds/" + world + "/" + category + ".wcct", "worlds/" + world + "/" + category + ".wccf");
+                QFile::rename("worlds/" + world + "/" + category + ".wccts", "worlds/" + world + "/" + category + ".wccfs");
             }
             loadFlex("Articles", world + "/" + category, ".wcar");
         }
     } else if (page == "Articles") {
         // edit
         if (mode == 1) {
-            loadEdit(item->text());
+            loadEdit(world + "/" + category + "/" + item->text() + ".wcar");
         }
     }
 }
@@ -246,20 +261,41 @@ void MainWindow::on_artB_clicked()
 // Saves whatever is currently being edited
 void MainWindow::on_saveB_clicked()
 {
-    //QFile data("output.txt");
-    //if (data.open(QFile::WriteOnly | QFile::Truncate)) {
-    //    QTextStream out(&data);
-        qDebug() << ui->descBox->toHtml();
-    //}
+    QFile path(current);
+    QFile side(current + "s");
+    path.open(QIODevice::WriteOnly);
+    side.open(QIODevice::WriteOnly);
+    path.QFile::resize(0);
+    side.QFile::resize(0);
+    QTextDocument document;
+    document.setHtml(ui->descBox->toHtml());
+    QTextStream out(&path);
+    out << document.toHtml();
+    document.setHtml(ui->sideBox->toHtml());
+    QTextStream out2(&side);
+    out2 << document.toHtml();
 }
 
 void MainWindow::loadEdit(QString file) {
-    current = file;
-
-    QFile *path = new QFile("");
+    current = "worlds/" + file;
+    QFile path(current);
+    QFile side(current + "s");
 
     ui->stackedWidget->setCurrentIndex(2);
-    ui->titleBox->setText(current);
+    ui->titleBox->setText(file.split("/").last().split(".").first());
+
+    path.open(QIODevice::ReadOnly);
+    side.open(QIODevice::ReadOnly);
+    QTextStream in(&path);
+    QTextStream in2(&side);
+    QTextDocument document;
+    document.setHtml(in.readAll());
+    ui->descBox->setText(document.toHtml());
+    document.setHtml(in2.readAll());
+    ui->sideBox->setText(document.toHtml());
+
+    //path.QFile::resize(0);
+    //stream << document.toHtml();
 
     ui->classMenu->setCurrentIndex(2);
 }

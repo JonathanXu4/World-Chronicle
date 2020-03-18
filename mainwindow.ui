@@ -254,6 +254,9 @@
         <pointsize>12</pointsize>
        </font>
       </property>
+      <property name="whatsThis">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;vasd&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
      </widget>
      <widget class="QLabel" name="titleLabel">
       <property name="geometry">
@@ -416,7 +419,7 @@
        <string>Sidebar</string>
       </property>
      </widget>
-     <widget class="QTextEdit" name="descBox_2">
+     <widget class="QTextEdit" name="sideBox">
       <property name="geometry">
        <rect>
         <x>1100</x>
