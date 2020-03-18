@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     category = categorize(".wcct", "worlds/" + world + "/").first();
     ui->menuFile->setTitle(world);
 
+
     // Initializes to create mode
     loadMode(0);
 }
@@ -118,7 +119,8 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
                 world = item->text();
                 category = categorize(".wcct", "worlds/" + world + "/").first();
             }
-            loadEdit(world + ".wcwd");
+            current = "worlds/" + world + ".wcwd";
+            loadEdit();
         // view
         } else if (mode == 2) {
             if (world != item->text()) {
@@ -131,7 +133,8 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
         // edit
         if (mode == 1) {
             category = item->text();
-            loadEdit(world + "/" + category + ".wcct");
+            current = "worlds/" + world + "/" + category + ".wcct";
+            loadEdit();
         // view
         } else if (mode == 2) {
             if (category != item->text()) {
@@ -142,7 +145,8 @@ void MainWindow::on_flexList_itemClicked(QListWidgetItem *item)
     } else if (page == "Articles") {
         // edit
         if (mode == 1) {
-            loadEdit(world + "/" + category + "/" + item->text() + ".wcar");
+            current = "worlds/" + world + "/" + category + "/" + item->text() + ".wcar";
+            loadEdit();
         }
     }
 }
@@ -197,6 +201,8 @@ void MainWindow::on_editB_clicked()
 void MainWindow::on_viewB_clicked()
 {
     loadMode(2);
+    loadView();
+
 }
 
 void MainWindow::loadMode(int change) {
@@ -295,8 +301,8 @@ void MainWindow::on_saveB_clicked()
 }
 
 // Loads edit boxes from save file
-void MainWindow::loadEdit(QString file) {
-    current = "worlds/" + file;
+// requires current path to be correct
+void MainWindow::loadEdit() {
     QFile path(current);
     QFile side(current + "s");
 
@@ -333,7 +339,29 @@ void MainWindow::loadEdit(QString file) {
     ui->sideBox->setText(document.toHtml());
 }
 
+// loads view page using save files
+// requires current path to be correct
+void MainWindow::loadView() {
+    current = "worlds/Neshka/Characters/Hydromass.wcar";
+    ui->stackedWidget->setCurrentIndex(3);
+    QFile path(current);
+    QFile side(current + "s");
+
+    ui->titleV->setText(current.split("/").last().split(".").first());
+    ui->titleV2->setText(current.split("/").last().split(".").first());
+    path.open(QIODevice::ReadOnly);
+    side.open(QIODevice::ReadOnly);
+    QTextStream in(&path);
+    QTextStream in2(&side);
+    QTextDocument document;
+    document.setHtml(in.readAll());
+    ui->bodyV->setText(document.toHtml());
+    document.setHtml(in2.readAll());
+    ui->sideV->setText(document.toHtml());
+}
+
 // converts extensions to their respective classes
+// Currently useless
 QString MainWindow::toClass(QString ext) {
     /*  world       .wcwd   0
      *  category    .wcct   1

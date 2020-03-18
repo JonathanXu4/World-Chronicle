@@ -68,7 +68,9 @@ private:
 
     void loadMode(int change);
 
-    void loadEdit(QString file);
+    void loadEdit();
+
+    void loadView();
 
     QString toClass(QString ext);
 
